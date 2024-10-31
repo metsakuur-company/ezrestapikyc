@@ -13,5 +13,6 @@ public class FRRegistRequest {
     private String osType ;
     private String depthImage ;
     private List<String> images  ;
+    private String deviceName ;
 
 }

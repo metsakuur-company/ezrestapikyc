@@ -32,7 +32,7 @@ public class EZService
      * @param depthImage
      * @return
      */
-    public EzResponse verfyUser(String custNo , String osType , String image , String depthImage ) {
+    public EzResponse verfyUser(String custNo , String osType , String image , String depthImage , String deviceName) {
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.VERIFY);
@@ -43,6 +43,7 @@ public class EZService
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
         frRequest.setImage(image);
+        frRequest.setDeviceName(deviceName);
         FrResponse frResponse = frService.frCall(frRequest);
         return frResponse.getEzResponse() ;
     }
@@ -57,7 +58,7 @@ public class EZService
      * @return
      * @throws FRException
      */
-    public EzResponse registerUser(String custNo , String name , String osType ,String depthImage ,  List<String> faces)
+    public EzResponse registerUser(String custNo , String name , String osType ,String depthImage ,  String deviceName , List<String> faces)
 
     {
         ArrayList<EzResponse> response = new ArrayList<>();
@@ -71,6 +72,7 @@ public class EZService
         frRequest.setIp(config.getIp());
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
+        frRequest.setDeviceName(deviceName);
         faces.stream().forEach(face -> {
             frRequest.setImage(face);
             FrResponse frResponse = frService.frCall(frRequest);
