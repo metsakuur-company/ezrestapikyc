@@ -1,6 +1,5 @@
 package com.metsakuur.ezway.controller;
 
-import com.metsakuur.common.exception.FRException;
 import com.metsakuur.ezway.model.FRRegistRequest;
 import com.metsakuur.ezway.model.FRVerifyRequest;
 import com.metsakuur.ezway.service.EZService;
