@@ -24,16 +24,13 @@ repositories {
 }
 
 dependencies {
-    implementation( files("libs/ezway-0.0.1-SNAPSHOT.jar") )
-
+    implementation( fileTree( dir: 'libs', include: ['*.jar'] ) )
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    annotationProcessor ('org.springframework.boot:spring-boot-configuration-processor')
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
-
 tasks.named('test') {
     useJUnitPlatform()
 }
