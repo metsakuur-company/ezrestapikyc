@@ -1,9 +1,15 @@
 package com.metsakuur.ezway.controller;
 
-import com.metsakuur.ezway.config.EzConfig;
+import com.metsakuur.common.exception.FRException;
+import com.metsakuur.ezway.model.FRRegistRequest;
+import com.metsakuur.ezway.model.FRVerifyRequest;
 import com.metsakuur.ezway.service.EZService;
+import com.metsakuur.face.model.EzResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -11,6 +17,17 @@ public class APIController {
 
     private EZService ezService;
 
+    @PostMapping("/regist")
+    public ResponseEntity<Object> regist(@RequestBody FRRegistRequest req) {
+        EzResponse response =  ezService.registerUser(req.getCustNo(), req.getName(), req.getOsType(), req.getDepthImage(), req.getImages());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<Object> verify(@RequestBody FRVerifyRequest req) {
+        EzResponse response =  ezService.verfyUser(req.getCustNo(), req.getOsType(), req.getDepthImage(), req.getImage() );
+        return ResponseEntity.ok(response);
+    }
 
 
 
