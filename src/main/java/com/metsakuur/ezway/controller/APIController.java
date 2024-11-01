@@ -37,7 +37,7 @@ public class APIController {
 
 
     @PostMapping("/compare")
-    public ResponseEntity<EzResponse> untact(@RequestBody FRCompareRequest req) {
+    public ResponseEntity<EzResponse> compare(@RequestBody FRCompareRequest req) {
         EzResponse response =  ezService.verifyIdCardFace(req.getIdImage(), req.getImage(), req.getDepthImage(), req.getOsType(), req.getCustNo());
         return ResponseEntity.ok(response);
     }
