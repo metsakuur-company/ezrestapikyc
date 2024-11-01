@@ -2,7 +2,6 @@ package com.metsakuur.ezway.service;
 
 import com.metsakuur.common.exception.FRException;
 import com.metsakuur.ezway.config.EzConfig;
-import com.metsakuur.face.enums.FrResultType;
 import com.metsakuur.face.enums.OsType;
 import com.metsakuur.face.enums.ServiceType;
 import com.metsakuur.face.model.EzResponse;
@@ -111,5 +110,20 @@ public class EZService
         return frResponse.getEzResponse() ;
     }
 
+    public EzResponse verifyIdCardFace(String custNo , String osType , String idImage , String image , String depthImage) {
+        FrRequest frRequest = new FrRequest();
+        frRequest.setCustNo(custNo);
+        frRequest.setServiceType(ServiceType.UNTACT_NODB);
+        frRequest.setChnl_dv(config.getChannel());
+        frRequest.setIp(config.getIp());
+        frRequest.setDepthImage(depthImage);
+        frRequest.setOsType(OsType.valueOf(osType));
+        frRequest.setPort(config.getPort());
+        frRequest.setUuid(config.getUuid());
+        frRequest.setImage(image);
+        frRequest.setIdImage(idImage);
+        FrResponse frResponse = frService.frCall(frRequest);
+        return frResponse.getEzResponse() ;
+    }
 
 }

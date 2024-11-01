@@ -1,5 +1,6 @@
 package com.metsakuur.ezway.controller;
 
+import com.metsakuur.ezway.model.FRCompareRequest;
 import com.metsakuur.ezway.model.FRRegistRequest;
 import com.metsakuur.ezway.model.FRVerifyRequest;
 import com.metsakuur.ezway.service.EZService;
@@ -34,5 +35,11 @@ public class APIController {
         return ResponseEntity.ok(response);
     }
 
+
+    @PostMapping("/compare")
+    public ResponseEntity<EzResponse> untact(@RequestBody FRCompareRequest req) {
+        EzResponse response =  ezService.verifyIdCardFace(req.getIdImage(), req.getImage(), req.getDepthImage(), req.getOsType(), req.getCustNo());
+        return ResponseEntity.ok(response);
+    }
 
 }

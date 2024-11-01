@@ -4,5 +4,5 @@ spring:
 ezway:
   ip: 220.76.26.177
   port: 15270
-  uuid: woorivn
-  channel: woorivn
+  uuid: VET
+  channel: VET
