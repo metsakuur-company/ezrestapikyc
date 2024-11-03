@@ -8,17 +8,18 @@ import com.metsakuur.face.model.EzResponse;
 import com.metsakuur.face.model.FrRequest;
 import com.metsakuur.face.model.FrResponse;
 import com.metsakuur.face.service.MkFrService;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@Slf4j
 public class EZService
 {
 
+    @Autowired
     private EzConfig config ;
 
     private MkFrService frService = new MkFrService();
@@ -60,7 +61,7 @@ public class EZService
     public EzResponse registerUser(String custNo , String name , String osType ,String depthImage ,  String deviceName , List<String> faces)
 
     {
-        ArrayList<EzResponse> response = new ArrayList<>();
+        EzResponse response = null ;
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setCustName(name);
@@ -72,23 +73,29 @@ public class EZService
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
         frRequest.setDeviceName(deviceName);
-        faces.stream().forEach(face -> {
+
+        for(String face : faces)  {
             frRequest.setImage(face);
             FrResponse frResponse = frService.frCall(frRequest);
-            if("0000".equals( frResponse.getCode() )) {
-                EzResponse ezresp = frResponse.getEzResponse() ;
-                if("00000".equals(ezresp.getResp_code())) {
-                    response.add(ezresp);
-                } else {
-                    deleteTemplate(custNo , osType);
-                    response.clear();
-                    response.add(ezresp);
-                    return ;
+            log.info("Response : {}  , ezResp: {}  ", frResponse.getCode(), frResponse.getEzResponse().getResp_code());
+            response= frResponse.getEzResponse();
+            if ("OK".equals(frResponse.getCode())) {
+                if (!"00000".equals(response.getResp_code())) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            deleteTemplate(custNo, osType);
+                        }
+                    }).start();
+                    break;
                 }
-                response.add(ezresp);
+            } else if ("FAIL".equals(frResponse.getCode())) {
+               break;
             }
-        });
-        return response.stream().findFirst().get() ;
+        } ;
+
+        return response ;
+
     }
 
     /**

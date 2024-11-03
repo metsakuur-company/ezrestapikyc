@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class FRCompareRequest {
 
+    private String reqId ;
     private String idImage ;
     private String image ;
     private String depthImage ;
