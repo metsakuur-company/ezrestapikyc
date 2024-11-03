@@ -6,6 +6,7 @@ import com.metsakuur.ezway.model.FRCompareRequest;
 import com.metsakuur.ezway.model.FRRegistRequest;
 import com.metsakuur.ezway.model.FRVerifyRequest;
 import com.metsakuur.ezway.service.EZService;
+import com.metsakuur.face.enums.OsType;
 import com.metsakuur.face.model.EzResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class APIController {
                 req.getDeviceName() == null) {
             throw new IllegalArgumentException("Invalid request");
         }
+        if(! hasProperOsType(req.getOsType())) {
+            throw new IllegalArgumentException("Invalid osType");
+        }
     }
 
     private void invalidateVerifyRequest(FRVerifyRequest req) {
@@ -35,6 +39,9 @@ public class APIController {
                 req.getOsType() == null ||
                 req.getDeviceName() == null) {
             throw new IllegalArgumentException("Invalid request");
+        }
+        if(! hasProperOsType(req.getOsType())) {
+            throw new IllegalArgumentException("Invalid osType");
         }
     }
 
@@ -45,6 +52,14 @@ public class APIController {
                 req.getCustNo() == null) {
             throw new IllegalArgumentException("Invalid request");
         }
+        if(! hasProperOsType(req.getOsType())) {
+            throw new IllegalArgumentException("Invalid osType");
+        }
+    }
+
+    private boolean hasProperOsType(String osType) {
+        return osType.equals(OsType.AND.getValue()) || osType.equals(OsType.IOS.getValue())
+                || osType.equals(OsType.ETC.getValue()) || osType.equals(OsType.WIN.getValue()) ;
     }
 
     @PostMapping("/regist")
