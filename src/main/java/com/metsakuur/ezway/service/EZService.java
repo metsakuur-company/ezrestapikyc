@@ -66,7 +66,7 @@ throws FRException
         frRequest.setCustNo(custNo);
         frRequest.setCustName(name);
         frRequest.setOsType(OsType.valueOf(osType));
-        frRequest.setDepthImage(depthImage);
+        if(depthImage != null) frRequest.setDepthImage(depthImage);
         frRequest.setServiceType(ServiceType.REGIST);
         frRequest.setChnl_dv(config.getChannel());
         frRequest.setIp(config.getIp());

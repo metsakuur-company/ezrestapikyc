@@ -4,8 +4,6 @@ import com.metsakuur.common.util.StringUtil;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 public class FRVerifyRequest {
@@ -18,6 +16,6 @@ public class FRVerifyRequest {
 
     @Override
     public String toString() {
-        return  "custNo : " + custNo + " , osType : " + osType + " , depthImage : " + depthImage + " , image : " + StringUtil.isEmpty( image ) + " , deviceName : " + deviceName ;
+        return  "custNo : " + custNo + " , osType : " + osType + " , depthImage : " + StringUtil.isEmpty( depthImage)  + " , image : " + StringUtil.isEmpty( image ) + " , deviceName : " + deviceName ;
     }
 }
