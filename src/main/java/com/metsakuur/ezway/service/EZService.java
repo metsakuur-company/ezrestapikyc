@@ -32,13 +32,13 @@ public class EZService
      * @param depthImage
      * @return
      */
-    public EzResponse verfyUser(String custNo , String osType , String image , String depthImage , String deviceName) {
+    public EzResponse verifyUser(String custNo , String osType , String image , String depthImage , String deviceName) throws FRException{
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.VERIFY);
         frRequest.setChnl_dv(config.getChannel());
         frRequest.setIp(config.getIp());
-        frRequest.setDepthImage(depthImage);
+        if(depthImage != null) frRequest.setDepthImage(depthImage);
         frRequest.setOsType(OsType.valueOf(osType));
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
@@ -59,7 +59,7 @@ public class EZService
      * @throws FRException
      */
     public EzResponse registerUser(String custNo , String name , String osType ,String depthImage ,  String deviceName , List<String> faces)
-
+throws FRException
     {
         EzResponse response = null ;
         FrRequest frRequest = new FrRequest();
@@ -117,7 +117,7 @@ public class EZService
         return frResponse.getEzResponse() ;
     }
 
-    public EzResponse verifyIdCardFace(String custNo , String osType , String idImage , String image , String depthImage) {
+    public EzResponse verifyIdCardFace(String custNo , String osType , String idImage , String image , String depthImage) throws FRException {
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.UNTACT_NODB);
