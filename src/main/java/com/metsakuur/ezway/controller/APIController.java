@@ -93,7 +93,9 @@ public class APIController {
         log.info("verify : " + req.toString());
         try {
             invalidateVerifyRequest(req);
-            EzResponse response = ezService.verifyUser(req.getCustNo(), getOsType( req.getOsType() ) , req.getDepthImage(), req.getImage(), req.getDeviceName());
+            //verifyUser(String custNo , OsType osType , String image , String depthImage , String deviceName)
+            EzResponse response = ezService.verifyUser(req.getCustNo(), getOsType( req.getOsType() ) ,
+                    req.getImage() , req.getDepthImage() , req.getDeviceName());
             return ResponseEntity.ok(response);
         }catch(FRException e) {
             EZErrorResponse response = new EZErrorResponse();
