@@ -2,6 +2,7 @@ package com.metsakuur.ezway.service;
 
 import com.metsakuur.common.exception.FRException;
 import com.metsakuur.ezway.config.EzConfig;
+import com.metsakuur.face.enums.FrResultType;
 import com.metsakuur.face.enums.OsType;
 import com.metsakuur.face.enums.ServiceType;
 import com.metsakuur.face.model.EzResponse;
@@ -32,7 +33,7 @@ public class EZService
      * @param depthImage
      * @return
      */
-    public EzResponse verifyUser(String custNo , OsType osType , String image , String depthImage , String deviceName) throws FRException{
+    public EzResponse verifyUser(String reqId , String custNo , OsType osType , String image , String depthImage , String deviceName) throws FRException{
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.VERIFY);
@@ -58,7 +59,7 @@ public class EZService
      * @return
      * @throws FRException
      */
-    public EzResponse registerUser(String custNo , String name , OsType osType ,String depthImage ,  String deviceName , List<String> faces)
+    public EzResponse registerUser(String reqId , String custNo , String name , OsType osType ,String depthImage ,  String deviceName , List<String> faces)
 throws FRException
     {
         EzResponse response = null ;
@@ -73,27 +74,31 @@ throws FRException
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
         frRequest.setDeviceName(deviceName);
-
+        int passed = 0 ;
         for(String face : faces)  {
             frRequest.setImage(face);
             FrResponse frResponse = frService.frCall(frRequest);
             log.info("Response : {}  , ezResp: {}  ", frResponse.getCode(), frResponse.getEzResponse().getResp_code());
             response= frResponse.getEzResponse();
             if ("OK".equals(frResponse.getCode())) {
-                if (!"00000".equals(response.getResp_code())) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            deleteTemplate(custNo, osType);
-                        }
-                    }).start();
-                    break;
+                if ("00000".equals(response.getResp_code())) {
+                    passed ++ ;
                 }
-            } else if ("FAIL".equals(frResponse.getCode())) {
-               break;
             }
         } ;
 
+        int cutoff =  (int) (faces.size() * 0.75)  ;
+        if(passed < cutoff) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1000);
+                    deleteTemplate(reqId , custNo, osType);
+                } catch (InterruptedException e) {
+                   //NOthing to do
+                }
+            }).start();
+            throw new FRException(FrResultType.ATTACK_DETECT);
+        }
         return response ;
 
     }
@@ -104,7 +109,7 @@ throws FRException
      * @param osType
      * @return
      */
-    public EzResponse deleteTemplate(String custNo , OsType osType) {
+    public EzResponse deleteTemplate(String reqId, String custNo , OsType osType) {
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.DELETE);
@@ -117,7 +122,7 @@ throws FRException
         return frResponse.getEzResponse() ;
     }
 
-    public EzResponse verifyIdCardFace(String custNo , OsType osType , String idImage , String image , String depthImage) throws FRException {
+    public EzResponse verifyIdCardFace(String reqId , String custNo , OsType osType , String idImage , String image , String depthImage) throws FRException {
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.UNTACT_NODB);

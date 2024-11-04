@@ -73,7 +73,7 @@ public class APIController {
     public ResponseEntity<Object> regist(@RequestBody FRRegistRequest req) {
         try {
             invalidateRegRequest(req);
-            EzResponse response = ezService.registerUser(req.getCustNo(), req.getName(), getOsType(req.getOsType()) , req.getDepthImage(), req.getDeviceName(), req.getImages());
+            EzResponse response = ezService.registerUser(req.getReqId() , req.getCustNo(), req.getName(), getOsType(req.getOsType()) , req.getDepthImage(), req.getDeviceName(), req.getImages());
             return ResponseEntity.ok(response);
         } catch (FRException e) {
             EZErrorResponse response = new EZErrorResponse();
@@ -94,7 +94,7 @@ public class APIController {
         try {
             invalidateVerifyRequest(req);
             //verifyUser(String custNo , OsType osType , String image , String depthImage , String deviceName)
-            EzResponse response = ezService.verifyUser(req.getCustNo(), getOsType( req.getOsType() ) ,
+            EzResponse response = ezService.verifyUser(req.getReqId() , req.getCustNo(), getOsType( req.getOsType() ) ,
                     req.getImage() , req.getDepthImage() , req.getDeviceName());
             return ResponseEntity.ok(response);
         }catch(FRException e) {
@@ -112,7 +112,7 @@ public class APIController {
 
     @PostMapping("/delete")
     public ResponseEntity<EzResponse> delete(@RequestBody FRBasicRequest req) {
-        EzResponse response =  ezService.deleteTemplate( req.getCustNo(), getOsType( req.getOsType() ) );
+        EzResponse response =  ezService.deleteTemplate( req.getReqId() ,  req.getCustNo(), getOsType( req.getOsType() ) );
         return ResponseEntity.ok(response);
     }
 
@@ -121,7 +121,7 @@ public class APIController {
     public ResponseEntity<Object> compare(@RequestBody FRCompareRequest req) {
         try {
             invalidateCompareRequest(req);
-            EzResponse response = ezService.verifyIdCardFace(req.getIdImage(), getOsType( req.getImage() ) , req.getDepthImage(), req.getOsType(), req.getCustNo());
+            EzResponse response = ezService.verifyIdCardFace(req.getReqId() , req.getIdImage(), getOsType( req.getImage() ) , req.getDepthImage(), req.getOsType(), req.getCustNo());
             return ResponseEntity.ok(response);
         } catch(FRException e) {
             EZErrorResponse response = new EZErrorResponse();

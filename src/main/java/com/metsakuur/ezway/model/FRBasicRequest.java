@@ -9,5 +9,6 @@ public class FRBasicRequest {
 
     private String osType ;
     private String custNo ;
+    private String reqId ;
 
 }
