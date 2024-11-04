@@ -32,14 +32,14 @@ public class EZService
      * @param depthImage
      * @return
      */
-    public EzResponse verifyUser(String custNo , String osType , String image , String depthImage , String deviceName) throws FRException{
+    public EzResponse verifyUser(String custNo , OsType osType , String image , String depthImage , String deviceName) throws FRException{
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.VERIFY);
         frRequest.setChnl_dv(config.getChannel());
         frRequest.setIp(config.getIp());
         if(depthImage != null) frRequest.setDepthImage(depthImage);
-        frRequest.setOsType(OsType.valueOf(osType));
+        frRequest.setOsType(osType);
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
         frRequest.setImage(image);
@@ -58,14 +58,14 @@ public class EZService
      * @return
      * @throws FRException
      */
-    public EzResponse registerUser(String custNo , String name , String osType ,String depthImage ,  String deviceName , List<String> faces)
+    public EzResponse registerUser(String custNo , String name , OsType osType ,String depthImage ,  String deviceName , List<String> faces)
 throws FRException
     {
         EzResponse response = null ;
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setCustName(name);
-        frRequest.setOsType(OsType.valueOf(osType));
+        frRequest.setOsType( osType);
         if(depthImage != null) frRequest.setDepthImage(depthImage);
         frRequest.setServiceType(ServiceType.REGIST);
         frRequest.setChnl_dv(config.getChannel());
@@ -104,27 +104,27 @@ throws FRException
      * @param osType
      * @return
      */
-    public EzResponse deleteTemplate(String custNo , String osType) {
+    public EzResponse deleteTemplate(String custNo , OsType osType) {
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.DELETE);
         frRequest.setChnl_dv(config.getChannel());
         frRequest.setIp(config.getIp());
-        frRequest.setOsType(OsType.valueOf(osType));
+        frRequest.setOsType(osType);
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
         FrResponse frResponse = frService.frCall(frRequest);
         return frResponse.getEzResponse() ;
     }
 
-    public EzResponse verifyIdCardFace(String custNo , String osType , String idImage , String image , String depthImage) throws FRException {
+    public EzResponse verifyIdCardFace(String custNo , OsType osType , String idImage , String image , String depthImage) throws FRException {
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.UNTACT_NODB);
         frRequest.setChnl_dv(config.getChannel());
         frRequest.setIp(config.getIp());
         frRequest.setDepthImage(depthImage);
-        frRequest.setOsType(OsType.valueOf(osType));
+        frRequest.setOsType(osType);
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
         frRequest.setImage(image);

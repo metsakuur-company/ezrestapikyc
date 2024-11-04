@@ -1,10 +1,7 @@
 package com.metsakuur.ezway.controller;
 
 import com.metsakuur.common.exception.FRException;
-import com.metsakuur.ezway.model.EZErrorResponse;
-import com.metsakuur.ezway.model.FRCompareRequest;
-import com.metsakuur.ezway.model.FRRegistRequest;
-import com.metsakuur.ezway.model.FRVerifyRequest;
+import com.metsakuur.ezway.model.*;
 import com.metsakuur.ezway.service.EZService;
 import com.metsakuur.face.enums.OsType;
 import com.metsakuur.face.model.EzResponse;
@@ -14,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.yaml.snakeyaml.util.EnumUtils;
 
 @Controller
 @Slf4j
@@ -58,15 +56,24 @@ public class APIController {
     }
 
     private boolean hasProperOsType(String osType) {
-        return osType.equals(OsType.AND.getValue()) || osType.equals(OsType.IOS.getValue())
-                || osType.equals(OsType.ETC.getValue()) || osType.equals(OsType.WIN.getValue()) ;
+        try {
+          EnumUtils.findEnumInsensitiveCase(OsType.class, osType);
+          return true ;
+        }catch (IllegalArgumentException e) {
+            return false;
+        }
     }
+
+    private OsType getOsType(String osType) {
+        return EnumUtils.findEnumInsensitiveCase(OsType.class, osType);
+    }
+
 
     @PostMapping("/regist")
     public ResponseEntity<Object> regist(@RequestBody FRRegistRequest req) {
         try {
             invalidateRegRequest(req);
-            EzResponse response = ezService.registerUser(req.getCustNo(), req.getName(), req.getOsType(), req.getDepthImage(), req.getDeviceName(), req.getImages());
+            EzResponse response = ezService.registerUser(req.getCustNo(), req.getName(), getOsType(req.getOsType()) , req.getDepthImage(), req.getDeviceName(), req.getImages());
             return ResponseEntity.ok(response);
         } catch (FRException e) {
             EZErrorResponse response = new EZErrorResponse();
@@ -86,7 +93,7 @@ public class APIController {
         log.info("verify : " + req.toString());
         try {
             invalidateVerifyRequest(req);
-            EzResponse response = ezService.verifyUser(req.getCustNo(), req.getOsType(), req.getDepthImage(), req.getImage(), req.getDeviceName());
+            EzResponse response = ezService.verifyUser(req.getCustNo(), getOsType( req.getOsType() ) , req.getDepthImage(), req.getImage(), req.getDeviceName());
             return ResponseEntity.ok(response);
         }catch(FRException e) {
             EZErrorResponse response = new EZErrorResponse();
@@ -102,8 +109,8 @@ public class APIController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<EzResponse> delete(@RequestBody FRVerifyRequest req) {
-        EzResponse response =  ezService.deleteTemplate( req.getCustNo(), req.getOsType() );
+    public ResponseEntity<EzResponse> delete(@RequestBody FRBasicRequest req) {
+        EzResponse response =  ezService.deleteTemplate( req.getCustNo(), getOsType( req.getOsType() ) );
         return ResponseEntity.ok(response);
     }
 
@@ -112,7 +119,7 @@ public class APIController {
     public ResponseEntity<Object> compare(@RequestBody FRCompareRequest req) {
         try {
             invalidateCompareRequest(req);
-            EzResponse response = ezService.verifyIdCardFace(req.getIdImage(), req.getImage(), req.getDepthImage(), req.getOsType(), req.getCustNo());
+            EzResponse response = ezService.verifyIdCardFace(req.getIdImage(), getOsType( req.getImage() ) , req.getDepthImage(), req.getOsType(), req.getCustNo());
             return ResponseEntity.ok(response);
         } catch(FRException e) {
             EZErrorResponse response = new EZErrorResponse();
