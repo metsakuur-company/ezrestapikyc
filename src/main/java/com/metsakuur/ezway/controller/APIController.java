@@ -1,5 +1,6 @@
 package com.metsakuur.ezway.controller;
 
+import com.google.gson.Gson;
 import com.metsakuur.common.exception.FRException;
 import com.metsakuur.ezway.model.*;
 import com.metsakuur.ezway.service.EZService;
@@ -24,7 +25,10 @@ public class APIController {
         if (req.getCustNo() == null ||
                 req.getName() == null ||
                 req.getOsType() == null ||
-                req.getDeviceName() == null) {
+                req.getDeviceName() == null ||
+                req.getImages() == null ||
+                req.getImages().size() == 0
+        ) {
             throw new IllegalArgumentException("Invalid request");
         }
         if(! hasProperOsType(req.getOsType())) {
@@ -35,7 +39,9 @@ public class APIController {
     private void invalidateVerifyRequest(FRVerifyRequest req) {
         if (req.getCustNo() == null ||
                 req.getOsType() == null ||
-                req.getDeviceName() == null) {
+                req.getDeviceName() == null ||
+                req.getImage() == null
+        ) {
             throw new IllegalArgumentException("Invalid request");
         }
         if(! hasProperOsType(req.getOsType())) {
@@ -70,69 +76,89 @@ public class APIController {
 
 
     @PostMapping("/regist")
-    public ResponseEntity<Object> regist(@RequestBody FRRegistRequest req) {
+    public ResponseEntity<String> regist(@RequestBody FRRegistRequest req) {
+        Gson gson = new Gson();
         try {
             invalidateRegRequest(req);
-            EzResponse response = ezService.registerUser(req.getReqId() , req.getCustNo(), req.getName(), getOsType(req.getOsType()) , req.getDepthImage(), req.getDeviceName(), req.getImages());
-            return ResponseEntity.ok(response);
+            EzApiResponse response = ezService.registerUser(req.getReqId() , req.getCustNo(), req.getName(), getOsType(req.getOsType()) , req.getDepthImage(), req.getDeviceName(), req.getImages());
+            String resp  = gson.toJson(response);
+            log.info("Regist Response : {}  "  ,  resp);
+            return ResponseEntity.ok(resp);
         } catch (FRException e) {
             EZErrorResponse response = new EZErrorResponse();
             response.setResp_code(e.getFrResultType().getCode()) ;
             response.setResp_msg(e.getFrResultType().getMsg());
-            return ResponseEntity.ok(response);
+            String resp  = gson.toJson(response);
+            log.info("Regist Response : {}  "  ,  resp);
+            return ResponseEntity.ok(resp);
         }catch (Exception e) {
             EZErrorResponse response = new EZErrorResponse();
             response.setResp_code("9999") ;
             response.setResp_msg(e.getMessage());
-            return ResponseEntity.ok(response);
+            String resp  = gson.toJson(response);
+            log.info("Regist Response : {}  "  ,  resp);
+            return ResponseEntity.ok(resp);
         }
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<Object> verify(@RequestBody FRVerifyRequest req) {
+    public ResponseEntity<String> verify(@RequestBody FRVerifyRequest req) {
         log.info("verify : " + req.toString());
+        Gson gson = new Gson();
         try {
             invalidateVerifyRequest(req);
             //verifyUser(String custNo , OsType osType , String image , String depthImage , String deviceName)
-            EzResponse response = ezService.verifyUser(req.getReqId() , req.getCustNo(), getOsType( req.getOsType() ) ,
+            EzApiResponse response = ezService.verifyUser(req.getReqId() , req.getCustNo(), getOsType( req.getOsType() ) ,
                     req.getImage() , req.getDepthImage() , req.getDeviceName());
-            return ResponseEntity.ok(response);
+            String resp  = gson.toJson(response);
+            log.info("Verify Response : {}  "  ,  resp);
+            return ResponseEntity.ok(resp);
         }catch(FRException e) {
             EZErrorResponse response = new EZErrorResponse();
             response.setResp_code(e.getFrResultType().getCode()) ;
             response.setResp_msg(e.getFrResultType().getMsg());
-            return ResponseEntity.ok(response);
+            String resp  = gson.toJson(response);
+            log.info("Verify Response : {} " , resp);
+            return ResponseEntity.ok(resp);
         }catch (Exception e) {
             EZErrorResponse response = new EZErrorResponse();
             response.setResp_code("9999") ;
             response.setResp_msg(e.getMessage());
-            return ResponseEntity.ok(response);
+            String resp  = gson.toJson(response);
+            log.info("Verify Response : {} " , resp);
+            return ResponseEntity.ok(resp);
         }
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<EzResponse> delete(@RequestBody FRBasicRequest req) {
-        EzResponse response =  ezService.deleteTemplate( req.getReqId() ,  req.getCustNo(), getOsType( req.getOsType() ) );
+    public ResponseEntity<EzApiResponse> delete(@RequestBody FRBasicRequest req) {
+        EzApiResponse response =  ezService.deleteTemplate( req.getReqId() ,  req.getCustNo(), getOsType( req.getOsType() ) );
         return ResponseEntity.ok(response);
     }
 
 
     @PostMapping("/compare")
-    public ResponseEntity<Object> compare(@RequestBody FRCompareRequest req) {
+    public ResponseEntity<String> compare(@RequestBody FRCompareRequest req) {
+        Gson gson = new Gson();
         try {
             invalidateCompareRequest(req);
-            EzResponse response = ezService.verifyIdCardFace(req.getReqId() , req.getIdImage(), getOsType( req.getImage() ) , req.getDepthImage(), req.getOsType(), req.getCustNo());
-            return ResponseEntity.ok(response);
+            EzApiResponse response = ezService.verifyIdCardFace(req.getReqId() , req.getIdImage(), getOsType( req.getImage() ) , req.getDepthImage(), req.getOsType(), req.getCustNo());
+            String resp  = gson.toJson(response);
+            log.info("Compare Response : {}  "  ,  resp);
+            return ResponseEntity.ok(resp);
         } catch(FRException e) {
             EZErrorResponse response = new EZErrorResponse();
             response.setResp_code(e.getFrResultType().getCode());
             response.setResp_msg(e.getFrResultType().getMsg());
-            return ResponseEntity.ok(response);
+            String resp  = gson.toJson(response);
+            log.info("Compare Response : {}  "  ,  resp);
+            return ResponseEntity.ok(resp);
         }catch (Exception e) {
             EZErrorResponse response = new EZErrorResponse();
             response.setResp_code("9999") ;
-            response.setResp_msg(e.getMessage());
-            return ResponseEntity.ok(response);
+            response.setResp_msg(e.getMessage());String resp  = gson.toJson(response);
+            log.info("Compare Response : {}  "  ,  resp);
+            return ResponseEntity.ok(resp);
         }
     }
 

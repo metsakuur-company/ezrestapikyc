@@ -2,6 +2,8 @@ package com.metsakuur.ezway.service;
 
 import com.metsakuur.common.exception.FRException;
 import com.metsakuur.ezway.config.EzConfig;
+import com.metsakuur.ezway.config.GlobalConstantData;
+import com.metsakuur.ezway.model.EzApiResponse;
 import com.metsakuur.face.enums.FrResultType;
 import com.metsakuur.face.enums.OsType;
 import com.metsakuur.face.enums.ServiceType;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,7 +36,10 @@ public class EZService
      * @param depthImage
      * @return
      */
-    public EzResponse verifyUser(String reqId , String custNo , OsType osType , String image , String depthImage , String deviceName) throws FRException{
+    public EzApiResponse verifyUser(String reqId , String custNo , OsType osType , String image , String depthImage , String deviceName) throws FRException{
+        if(GlobalConstantData.SIMULATE_MODE) {
+            return defaultResponse(reqId);
+        }
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.VERIFY);
@@ -46,7 +52,7 @@ public class EZService
         frRequest.setImage(image);
         frRequest.setDeviceName(deviceName);
         FrResponse frResponse = frService.frCall(frRequest);
-        return frResponse.getEzResponse() ;
+        return EzApiResponse.fromEzResponse(reqId , frResponse.getEzResponse()) ;
     }
 
     /**
@@ -59,9 +65,16 @@ public class EZService
      * @return
      * @throws FRException
      */
-    public EzResponse registerUser(String reqId , String custNo , String name , OsType osType ,String depthImage ,  String deviceName , List<String> faces)
-throws FRException
+    public EzApiResponse registerUser(String reqId , String custNo , String name , OsType osType ,String depthImage ,  String deviceName , List<String> faces) throws FRException
     {
+
+        if(GlobalConstantData.SIMULATE_MODE) {
+            return defaultResponse(reqId);
+        }
+
+        List<EzResponse> failures = new ArrayList<>();
+        List<EzResponse> successes = new ArrayList<>();
+
         EzResponse response = null ;
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
@@ -74,7 +87,7 @@ throws FRException
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
         frRequest.setDeviceName(deviceName);
-        int passed = 0 ;
+
         for(String face : faces)  {
             frRequest.setImage(face);
             FrResponse frResponse = frService.frCall(frRequest);
@@ -82,13 +95,17 @@ throws FRException
             response= frResponse.getEzResponse();
             if ("OK".equals(frResponse.getCode())) {
                 if ("00000".equals(response.getResp_code())) {
-                    passed ++ ;
+                    successes.add(response);
+                } else {
+                    failures.add(response);
                 }
+            }else {
+                failures.add(response);
             }
         } ;
 
         int cutoff =  (int) (faces.size() * 0.75)  ;
-        if(passed < cutoff) {
+        if(successes.size() < cutoff) {
             new Thread(() -> {
                 try {
                     Thread.sleep(1000);
@@ -97,9 +114,9 @@ throws FRException
                    //NOthing to do
                 }
             }).start();
-            throw new FRException(FrResultType.ATTACK_DETECT);
+            throw new FRException(FrResultType.from(failures.get(0).getResp_code()));
         }
-        return response ;
+        return EzApiResponse.fromEzResponse(reqId ,  successes.get(0) ) ;
 
     }
 
@@ -109,7 +126,10 @@ throws FRException
      * @param osType
      * @return
      */
-    public EzResponse deleteTemplate(String reqId, String custNo , OsType osType) {
+    public EzApiResponse deleteTemplate(String reqId, String custNo , OsType osType) {
+        if(GlobalConstantData.SIMULATE_MODE) {
+            return defaultResponse(reqId);
+        }
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.DELETE);
@@ -119,10 +139,13 @@ throws FRException
         frRequest.setPort(config.getPort());
         frRequest.setUuid(config.getUuid());
         FrResponse frResponse = frService.frCall(frRequest);
-        return frResponse.getEzResponse() ;
+        return EzApiResponse.fromEzResponse(reqId , frResponse.getEzResponse()) ;
     }
 
-    public EzResponse verifyIdCardFace(String reqId , String custNo , OsType osType , String idImage , String image , String depthImage) throws FRException {
+    public EzApiResponse verifyIdCardFace(String reqId , String custNo , OsType osType , String idImage , String image , String depthImage) throws FRException {
+        if(GlobalConstantData.SIMULATE_MODE) {
+            return defaultResponse(reqId);
+        }
         FrRequest frRequest = new FrRequest();
         frRequest.setCustNo(custNo);
         frRequest.setServiceType(ServiceType.UNTACT_NODB);
@@ -135,7 +158,15 @@ throws FRException
         frRequest.setImage(image);
         frRequest.setIdImage(idImage);
         FrResponse frResponse = frService.frCall(frRequest);
-        return frResponse.getEzResponse() ;
+        return EzApiResponse.fromEzResponse(reqId , frResponse.getEzResponse()) ;
+    }
+
+    private EzApiResponse defaultResponse(String reqId) {
+        return EzApiResponse.builder()
+                .reqId(reqId)
+                .resp_code("00000")
+                .resp_msg("Simulation Mode")
+                .build();
     }
 
 }
