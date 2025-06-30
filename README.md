@@ -3,28 +3,28 @@ MKFR API GUIDE v1.5.9
 
 
 ## Table of Contents
-1. [Service Introduction](#service-introduction)
-2. [API Classes](#api-classes)
-3. [API Services](#api-services)
-4. [TOTP Encryption Communication Guide](#totp-encryption-communication-guide)
-5. [Face Registration (REGIST) Service](#face-registration-regist-service)
-6. [Face Registration (REGIST_T) Service](#face-registration-regist_t-service)
-7. [Face Delete (DELETE) Service](#face-delete-delete-service)
-8. [Face Verification (VERIFY) Service](#face-verification-verify-service)
-9. [Face Verification (VERIFY_T) Service](#face-verification-verify_t-service)
-10. [Face 1:N Verification (BULKVERIFY) Service](#face-1n-verification-bulkverify-service)
-11. [Face Authentication Status Check (CHECK) Service](#face-authentication-status-check-check-service)
-12. [ID Card Face Comparison (UNTACT) Service](#id-card-face-comparison-untact-service)
-13. [ID Card Face Comparison Registration (REGIST_U) Service](#id-card-face-comparison-registration-regist_u-service)
-14. [Passport OCR (PASSPORT_OCR) Service](#passport-ocr-passport_ocr-service)
-15. [ID Card Face Comparison (UNTACT_NODB) Service](#id-card-face-comparison-untact_nodb-service)
-16. [Template Extraction (TEMPLATE) Service](#template-extraction-template-service)
-17. [Template Comparison (TEMPLATE_VERIFY) Service](#template-comparison-template_verify-service)
-18. [Response Code Policy](#response-code-policy)
-19. [Server Response Examples](#server-response-examples)
-20. [SO File Configuration](#so-file-configuration)
-21. [iOS/Android Device Name Extraction](#iosandroid-device-name-extraction)
-22. [Additional Explanation of Face Recognition Options](#additional-explanation-of-face-recognition-options)
+1. [Service Introduction](#1-service-introduction)
+2. [API Classes](#2-api-classes)
+3. [API Services](#3-api-services)
+4. [TOTP Encryption Communication Guide](#4-totp-encryption-communication-guide)
+5. [Face Registration (REGIST) Service](#5-face-registration-regist-service)
+6. [Face Registration (REGIST_T) Service](#6-face-registration-regist_t-service)
+7. [Face Delete (DELETE) Service](#7-face-delete-delete-service)
+8. [Face Verification (VERIFY) Service](#8-face-verification-verify-service)
+9. [Face Verification (VERIFY_T) Service](#9-face-verification-verify_t-service)
+10. [Face 1:N Verification (BULKVERIFY) Service](#10-face-1n-verification-bulkverify-service)
+11. [Face Authentication Status Check (CHECK) Service](#11-face-authentication-status-check-check-service)
+12. [ID Card Face Comparison (UNTACT) Service](#12-id-card-face-comparison-untact-service)
+13. [ID Card Face Comparison Registration (REGIST_U) Service](#13-id-card-face-comparison-registration-regist_u-service)
+14. [Passport OCR (PASSPORT_OCR) Service](#14-passport-ocr-passport_ocr-service)
+15. [ID Card Face Comparison (UNTACT_NODB) Service](#15-id-card-face-comparison-untact_nodb-service)
+16. [Template Extraction (TEMPLATE) Service](#16-template-extraction-template-service)
+17. [Template Comparison (TEMPLATE_VERIFY) Service](#17-template-comparison-template_verify-service)
+18. [Response Code Policy](#18-response-code-policy)
+19. [Server Response Examples](#19-server-response-examples)
+20. [SO File Configuration](#20-so-file-configuration)
+21. [iOS/Android Device Name Extraction](#21-iosandroid-device-name-extraction)
+22. [Additional Explanation of Face Recognition Options](#22-additional-explanation-of-face-recognition-options)
 
 ---
 
@@ -1393,7 +1393,9 @@ frResponse = mkFrService.frCall(frRequest);
     "resp_chnl_dv": "ADT",
     "resp_name": ""
   }
-}```
+}
+
+```
 ---
 
 ## 16. Template Extraction (TEMPLATE) Service
@@ -1401,6 +1403,7 @@ frResponse = mkFrService.frCall(frRequest);
 There is no registration function because the service itself does not use a DB, and you must receive the template data and manage it in your own DB. 
 
 ### Request Parameter Classes
+
 ```java
 com.metsakuur.face.model.FrRequest
 com.metsakuur.face.enums.ServiceType
@@ -1930,7 +1933,7 @@ func getModel() -> String {
 
 **Example:** `iPhone14,5`
 
-## 22. Additional Explanation of Face Recognition Options (Parameters)
+## 22. Additional Explanation of Face Recognition Options
 
 Description of the parameters that correspond to the face recognition option values. If you use the Nodb version, please manage the values through the customer admin page (DB management) to change them at the time. If you have difficulty managing the DB, you can manage them in properties or yaml, but it is difficult to respond in real time. Please be sure to discuss with your Metsakuur representative before changing the option values.
 
